@@ -1,0 +1,60 @@
+site_name: Introduction to scientific python 
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details # allows admonition collapsible
+  - pymdownx.superfences # allows nesting of code
+  - toc # table of content
+  - mdx_math # python-markdown-math
+  - pymdownx.arithmatex: # Arithmatex to preserves LaTeX for being used with MathJax
+     generic: true
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:pymdownx.emoji.to_svg
+  - pymdownx.tasklist: # support checkboxes
+       custom_checkbox: true
+       clickable_checkbox: true
+
+extra_javascript:
+  - javascripts/config.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - toc.integrate
+
+# plugins:
+  # - exclude:
+  #     glob:
+  #       - machine learning/ancien/*
+
+nav:
+- Home: "index.md"
+
+- Course Materials:
+  - "Pre-requisites & objectives": "educationnal_goals_and_prerequisites.md"
+  - Day 1 - Foundations:
+    - "Morning: Python Basics & NumPy": "day1_morning.md"
+    - "Afternoon: Lists, NumPy & Pandas": "day1_afternoon.md"
+  # - Day 2 - Advanced Topics:
+  #   - "Morning: Advanced NumPy & Pandas": "day2_morning.md"
+  #   - "Afternoon: Functions & OOP": "day2_afternoon.md"
+  # - Day 3 - Testing & Projects:
+  #   - "Morning: Error Handling & Testing": "day3_morning.md"
+  #   - "Afternoon: Final Project": "day3_afternoon.md"
+
+- Additional ressources:
+  - Glossary:
+    - "Glossary of domain specific notions": "glossary.md"
+  - Selection of courses:
+    - "Continue to learn": "additional_courses.md"
+  # - Quelques conseils & astuces : "conseils_méthodologiques.md"
+
+
+# - Evaluations:
+  # decommenter l'évlauation souhaitée en fonction du cours
+  # - "Evaluation exercice" : "evaluation_detailled.md"
+  # - "Evaluation exercice" : "evaluation_short.md"
