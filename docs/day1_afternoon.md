@@ -156,17 +156,12 @@ trigger_threshold = detector_config['trigger']['threshold']
 
 ### Exercise 1.4 (30 min)
 
-Open the afternoon notebook: [day1_afternoon_exercises.ipynb](../notebooks/day1_afternoon_exercises.ipynb)
+📓 **Open the companion notebook:** [day1_afternoon_exercises.ipynb](../notebooks/day1_afternoon_exercises.ipynb)
 
-**Beginner:**
-- Create a list of detector hit positions (x, y coordinates as tuples)
-- Calculate distances from the origin using a loop or list comprehension
-- Find the hit closest to the origin
-
-**Advanced:**
-- Create nested dictionaries for complete detector geometry
-- Implement coordinate transformations (Cartesian ↔ Cylindrical)
-- Calculate which detector layer each hit corresponds to
+| Level | Task |
+|-------|------|
+| **Beginner** | Calculate distances from origin for detector hits, find closest hit |
+| **Advanced** | Implement coordinate transformations and detector layer identification |
 
 ---
 
@@ -326,19 +321,12 @@ sorted_indices = np.argsort(energies)  # Indices that would sort
 
 ### Exercise 1.5 (50 min)
 
-**Beginner:**
+📓 **Continue in the notebook:** [day1_afternoon_exercises.ipynb](../notebooks/day1_afternoon_exercises.ipynb)
 
-1. Load simulated detector data (will be provided as `.npy` file)
-2. Apply energy threshold cuts using boolean masks (e.g., E > 20 GeV)
-3. Calculate basic statistics (mean, std, min, max)
-4. Plot distributions before and after cuts
-
-**Advanced:**
-
-1. Vectorized calculation of invariant masses for all particle pairs in an event
-2. Implement detector acceptance corrections using 2D efficiency maps
-3. Use advanced indexing for complex event selection
-4. Optimize for performance (compare vectorized vs loop approaches)
+| Level | Task |
+|-------|------|
+| **Beginner** | Apply energy cuts with boolean masks, calculate statistics, plot distributions |
+| **Advanced** | Vectorized invariant mass calculation, 2D efficiency corrections, performance optimization |
 
 ---
 
@@ -521,22 +509,12 @@ data.dropna(subset=['energy'])    # Drop only if energy is NaN
 
 ### Exercise 1.6 (35 min)
 
-**Beginner:**
+📓 **Continue in the notebook:** [day1_afternoon_exercises.ipynb](../notebooks/day1_afternoon_exercises.ipynb)
 
-1. Load particle collision data from CSV into a DataFrame
-2. Filter events by trigger conditions
-3. Calculate and add a new column for transverse momentum (pt)
-4. Create simple summary statistics
-
-**Advanced:**
-
-1. Merge multiple DataFrames (event data + detector info)
-2. Group by event number and calculate event-level quantities:
-   - Total energy per event
-   - Number of particles per event
-   - Leading (highest pT) particle per event
-3. Handle missing data and outliers
-4. Create pivot tables for run-by-run statistics
+| Level | Task |
+|-------|------|
+| **Beginner** | Load data, filter by trigger, add pT column, compute statistics |
+| **Advanced** | Merge DataFrames, groupby for event-level quantities, handle missing data |
 
 ---
 
@@ -628,14 +606,7 @@ plt.show()
         - Seamless integration with NumPy
 
 !!! warning "Performance Tip"
-    Always prefer NumPy/Pandas vectorized operations over Python loops when working with large datasets!
-
-!!! info "Tomorrow"
-    Day 2 will cover:
-    - Advanced NumPy techniques (fancy indexing, broadcasting)
-    - Advanced Pandas operations (MultiIndex, time series)
-    - Functions and object-oriented programming for analysis code
-
+    Always prefer NumPy/Pandas vectorized operations over Python loops when working with large datasets !
 ---
 
 ## Additional Resources
