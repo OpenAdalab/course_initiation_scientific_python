@@ -516,7 +516,7 @@ Jupyter notebooks (a key composant of this project) is **web application** that 
 
 ### Exercise 1.1 (20 min)
 
-📓 **Open the companion notebook:** [day1_morning_exercises.ipynb](../notebooks/day1_morning_exercises.ipynb)
+📓 **Open the companion notebook:** [day1_morning_exercises.ipynbhttps://github.com/OpenAdalab/course_initiation_scientific_python/blob/main/notebooks/day1_morning_exercises.ipynb)
 
 | Level | Task |
 |-------|------|
@@ -538,7 +538,7 @@ This section covers variables, data types, and operators. **All examples and exe
 
 ### Exercise 1.2 (25 min)
 
-📓 **Continue in the notebook:** [day1_morning_exercises.ipynb](../notebooks/day1_morning_exercises.ipynb)
+📓 **Continue in the notebook:** [day1_morning_exercises.ipynb](https://github.com/OpenAdalab/course_initiation_scientific_python/blob/main/notebooks/day1_morning_exercises.ipynb)
 
 | Level | Task |
 |-------|------|
@@ -576,7 +576,7 @@ This section covers variables, data types, and operators. **All examples and exe
 
 ### Exercise 1.3 (45 min)
 
-📓 **Continue in the notebook:** [day1_morning_exercises.ipynb](../notebooks/day1_morning_exercises.ipynb)
+📓 **Continue in the notebook:** [day1_morning_exercises.ipynb](https://github.com/OpenAdalab/course_initiation_scientific_python/blob/main/notebooks/day1_morning_exercises.ipynb)
 
 | Level | Task |
 |-------|------|

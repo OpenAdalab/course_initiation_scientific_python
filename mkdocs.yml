@@ -35,7 +35,8 @@ nav:
 - Home: "index.md"
 
 - Course Materials:
-  - "Pre-requisites & objectives": "educationnal_goals_and_prerequisites.md"
+  - "Objectives": "educationnal_goals_and_prerequisites.md"
+  - "Code materials" : "code_materials.md"
   - Day 1 - Foundations:
     - "Morning: Python Basics & NumPy": "day1_morning.md"
     - "Afternoon: Lists, NumPy & Pandas": "day1_afternoon.md"
