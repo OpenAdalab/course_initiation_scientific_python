@@ -1,0 +1,1 @@
+This course is distributed under a [Creative Commons CC-BY-NC-SA 4.0 license](https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.en) (Attribution of the author, non commercial use and sharing under the same conditions), please respect these distribution conditions 🙏 
