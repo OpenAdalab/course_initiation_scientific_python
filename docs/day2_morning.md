@@ -156,7 +156,7 @@ print(f"Speedup: {time_loop/time_vec:.1f}x")
 
 ### Exercise 2.1 (40 min)
 
-📓 **Open the companion notebook:** [day2_morning_exercises.ipynb](../notebooks/day2_morning_exercises.ipynb)
+📓 **Open the companion notebook:** [day2_morning_exercises.ipynb](https://github.com/OpenAdalab/course_initiation_scientific_python/blob/main/notebooks/day2_morning_exercises.ipynb)
 
 | Level | Task |
 |-------|------|
@@ -293,6 +293,54 @@ df['particle_type'] = df['particle_type'].astype('category')
 df['detector'] = df['detector'].astype('category')
 
 print(f"Memory usage (category): {df.memory_usage(deep=True).sum() / 1e6:.1f} MB")
+```
+
+### Pivot Tables for Summary Statistics
+
+Pivot tables are powerful for summarizing data across multiple dimensions:
+
+```python
+# Sample detector data
+df = pd.DataFrame({
+    'run': [1, 1, 1, 2, 2, 2],
+    'detector': ['barrel', 'barrel', 'endcap', 'barrel', 'endcap', 'endcap'],
+    'energy': [45.2, 52.1, 38.7, 61.3, 42.8, 55.9]
+})
+
+# Basic pivot table: mean energy by run and detector
+pivot = pd.pivot_table(
+    df,
+    values='energy',
+    index='run',
+    columns='detector',
+    aggfunc='mean'
+)
+print(pivot)
+#          barrel  endcap
+# run
+# 1         48.65   38.70
+# 2         61.30   49.35
+
+# Multiple aggregation functions
+pivot_multi = pd.pivot_table(
+    df,
+    values='energy',
+    index='run',
+    columns='detector',
+    aggfunc=['mean', 'std', 'count']
+)
+print(pivot_multi)
+
+# Add margins (row/column totals)
+pivot_margins = pd.pivot_table(
+    df,
+    values='energy',
+    index='run',
+    columns='detector',
+    aggfunc='mean',
+    margins=True,
+    margins_name='Total'
+)
 ```
 
 ### Exercise 2.2 (45 min)

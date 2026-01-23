@@ -156,7 +156,7 @@ trigger_threshold = detector_config['trigger']['threshold']
 
 ### Exercise 1.4 (30 min)
 
-📓 **Open the companion notebook:** [day1_afternoon_exercises.ipynb](../notebooks/day1_afternoon_exercises.ipynb)
+📓 **Open the companion notebook:** [day1_afternoon_exercises.ipynb](https://github.com/OpenAdalab/course_initiation_scientific_python/blob/main/notebooks/day1_morning_exercises.ipynb)
 
 | Level | Task |
 |-------|------|
