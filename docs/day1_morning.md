@@ -514,9 +514,13 @@ Jupyter notebooks (a key composant of this project) is **web application** that 
 
     - with GUI : lauch it with anconda navigator
 
+???+ tip "Alaways look at the doc !"
+    Use the [official doc](https://docs.python.org/3/)
+    ... or some cool tools like [PyDocs](https://www.pydocs.site/en)
+
 ### Exercise 1.1 (20 min)
 
-📓 **Open the companion notebook:** [day1_morning_exercises.ipynbhttps://github.com/OpenAdalab/course_initiation_scientific_python/blob/main/notebooks/day1_morning_exercises.ipynb)
+📓 **Open the companion notebook:** [day1_morning_exercises](ipynbhttps://github.com/OpenAdalab/course_initiation_scientific_python/blob/main/notebooks/day1_morning_exercises.ipynb)
 
 | Level | Task |
 |-------|------|
@@ -529,6 +533,9 @@ Jupyter notebooks (a key composant of this project) is **web application** that 
 
 This section covers variables, data types, and operators. **All examples and exercises are in the notebook.**
 
+???+ tip "Write code that follows Python convention (PEP) !"
+    Python community have proposed some conventions ([Python Enhancement Proposal](https://www.pydocs.site/en)) for writing code.  
+    Try to learn how to follow them, especially the [PEP 8](https://peps.python.org/pep-0008/)
 ### Key Concepts
 
 - **Variables**: Use descriptive names (`particle_energy`, not `x`)
