@@ -43,9 +43,9 @@ nav:
   - Day 2 - Advanced Topics:
     - "Morning: Advanced NumPy & Pandas": "day2_morning.md"
     - "Afternoon: Functions & OOP": "day2_afternoon.md"
-  # - Day 3 - Testing & Projects:
-  #   - "Morning: Error Handling & Testing": "day3_morning.md"
-  #   - "Afternoon: Final Project": "day3_afternoon.md"
+  - Day 3 - Testing & Projects:
+    - "Morning: Error Handling & Testing": "day3_morning.md"
+    - "Afternoon: Final Project": "day3_afternoon.md"
 
 - Additional ressources:
   - Glossary:
