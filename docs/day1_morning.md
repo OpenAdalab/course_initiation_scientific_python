@@ -18,27 +18,27 @@ Most modern computers follow the **Von Neumann architecture**, which consists of
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                         COMPUTER                            │
-│  ┌─────────────┐    ┌─────────────────────────────────┐    │
-│  │             │    │           MEMORY (RAM)          │    │
-│  │    CPU      │◄──►│  ┌───────────┬───────────────┐  │    │
-│  │             │    │  │  Program  │     Data      │  │    │
-│  │ ┌─────────┐ │    │  │Instructions│   Variables  │  │    │
-│  │ │  ALU    │ │    │  └───────────┴───────────────┘  │    │
-│  │ │(compute)│ │    └─────────────────────────────────┘    │
-│  │ └─────────┘ │                    ▲                      │
-│  │ ┌─────────┐ │                    │                      │
-│  │ │ Control │ │                    ▼                      │
-│  │ │  Unit   │ │    ┌─────────────────────────────────┐    │
-│  │ └─────────┘ │    │     STORAGE (Disk/SSD)          │    │
-│  └─────────────┘    │  Files, Databases, Programs     │    │
-│                     └─────────────────────────────────┘    │
-│         ▲                           ▲                      │
-│         │                           │                      │
-│         ▼                           ▼                      │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │              INPUT / OUTPUT DEVICES                 │   │
-│  │     Keyboard, Mouse, Screen, Network, Sensors...   │   │
-│  └─────────────────────────────────────────────────────┘   │
+│  ┌─────────────┐    ┌─────────────────────────────────┐     │
+│  │             │    │           MEMORY (RAM)          │     │
+│  │    CPU      │◄──►│  ┌───────────┬───────────────┐  │     │
+│  │             │    │  │  Program  │     Data      │  │     │
+│  │ ┌─────────┐ │    │  │Instructions│   Variables  │  │     │
+│  │ │  ALU    │ │    │  └───────────┴───────────────┘  │     │
+│  │ │(compute)│ │    └─────────────────────────────────┘     │
+│  │ └─────────┘ │                    ▲                       │
+│  │ ┌─────────┐ │                    │                       │
+│  │ │ Control │ │                    ▼                       │
+│  │ │  Unit   │ │    ┌─────────────────────────────────┐     │
+│  │ └─────────┘ │    │     STORAGE (Disk/SSD)          │     │
+│  └─────────────┘    │  Files, Databases, Programs     │     │
+│                     └─────────────────────────────────┘     │
+│         ▲                           ▲                       │
+│         │                           │                       │
+│         ▼                           ▼                       │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │              INPUT / OUTPUT DEVICES                 │    │
+│  │     Keyboard, Mouse, Screen, Network, Sensors...    │    │
+│  └─────────────────────────────────────────────────────┘    │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -76,24 +76,24 @@ A **programming language** is a formal way to communicate instructions to a comp
 ```
 ┌─────────────────────────────────────────────────────────┐
 │  Human Thought                                          │
-│  "Calculate the average energy of all particles"       │
+│  "Calculate the average energy of all particles"        │
 └───────────────────────────┬─────────────────────────────┘
                             ▼
 ┌─────────────────────────────────────────────────────────┐
 │  High-Level Language (Python)                           │
-│  average = np.mean(energies)                           │
+│  average = np.mean(energies)                            │
 └───────────────────────────┬─────────────────────────────┘
                             ▼
 ┌─────────────────────────────────────────────────────────┐
 │  Low-Level Language (Assembly)                          │
-│  LOAD R1, energies_ptr                                 │
-│  LOOP: ADD R2, [R1]                                    │
-│        INC R1 ...                                      │
+│  LOAD R1, energies_ptr                                  │
+│  LOOP: ADD R2, [R1]                                     │
+│        INC R1 ...                                       │
 └───────────────────────────┬─────────────────────────────┘
                             ▼
 ┌─────────────────────────────────────────────────────────┐
 │  Machine Code (Binary)                                  │
-│  10110001 00101100 11010010 01001011...               │
+│  10110001 00101100 11010010 01001011...                 │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -134,26 +134,22 @@ An **algorithm** is a step-by-step, non ambiguous, procedure to solve a problem.
         ┌─────────────┐
         │ i = 1       │
         └──────┬──────┘
-               ▼
-      ┌────────┴────────┐
-      │  i < n_particles?│
-      └────────┬────────┘
-          yes  │  no
-               ▼  ─────────────────┐
-      ┌────────┴────────┐          │
-      │  E[i] > max ?   │          │
-      └────────┬────────┘          │
-          yes  │  no               │
-               ▼                   │
+               |
+               ▼ 
+      ┌────────┴────────┐          
+      │  E[i] > max ?   │          
+      └────────┬────────┘          
+          yes  │  no ──────────────|       
+               ▼                   |
         ┌─────────────┐            │
         │ max = E[i]  │            │
         └──────┬──────┘            │
                │◄──────────────────┤
-               ▼                   │
-        ┌─────────────┐            │
-        │   i = i + 1 │            │
-        └──────┬──────┘            │
-               │───────────────────┘
+               ▼                   
+        ┌─────────────┐            
+        │   i = i + 1 │            
+        └──────┬──────┘            
+               │
                ▼
         ┌─────────────┐
         │ return max  │
@@ -549,7 +545,7 @@ This section covers variables, data types, and operators. **All examples and exe
 ??? tip "Augmented Assignment Operators"
 
     Python provides shorthand operators to modify a variable in place:
-
+    
     | Operator | Equivalent to | Example |
     |----------|---------------|---------|
     | `+=` | `x = x + a` | `count += 1` |
@@ -557,7 +553,7 @@ This section covers variables, data types, and operators. **All examples and exe
     | `*=` | `x = x * a` | `amplitude *= 2` |
     | `/=` | `x = x / a` | `intensity /= 10` |
     | `**=` | `x = x ** a` | `value **= 2` |
-
+    
     ```python
     # Accumulate total energy in a loop
     total_energy = 0.0

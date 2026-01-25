@@ -18,7 +18,7 @@
 	- know how to use the main python data structures, especially pandas dataframe & numpy arrays
 	- be able to stucture and organize python code for a small project
 	- be able to handle code errors and apply testing methods
-	- Practice, practice & practice :)
+	- practice, practice & practice :)
 
-During this course, you will train on the **exercice with a self-assessment (in Evaluations section)**. This will help you to identify precisely the precises skills to acquire for machine learning practice
+
 

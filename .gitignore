@@ -1,4 +1,5 @@
 gestion/
 assets/
 CLAUDE.md
-Makefile    
+Makefile
+site/    
