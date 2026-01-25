@@ -514,9 +514,16 @@ Jupyter notebooks (a key composant of this project) is **web application** that 
 
     - with GUI : lauch it with anconda navigator
 
-???+ tip "Alaways look at the doc !"
+
+### Good practices
+
+???+ tip "Always look at the doc !"
     Use the [official doc](https://docs.python.org/3/)
     ... or some cool tools like [PyDocs](https://www.pydocs.site/en)
+
+???+ tip "Write code that follows Python convention (PEP) !"
+    Python community have proposed some conventions ([Python Enhancement Proposal](https://www.pydocs.site/en)) for writing code.  
+    Try to learn how to follow them, especially the [PEP 8](https://peps.python.org/pep-0008/)
 
 ### Exercise 1.1 (20 min)
 
@@ -533,15 +540,81 @@ Jupyter notebooks (a key composant of this project) is **web application** that 
 
 This section covers variables, data types, and operators. **All examples and exercises are in the notebook.**
 
-???+ tip "Write code that follows Python convention (PEP) !"
-    Python community have proposed some conventions ([Python Enhancement Proposal](https://www.pydocs.site/en)) for writing code.  
-    Try to learn how to follow them, especially the [PEP 8](https://peps.python.org/pep-0008/)
 ### Key Concepts
-
 - **Variables**: Use descriptive names (`particle_energy`, not `x`)
 - **Numeric types**: `int`, `float`, `complex`
 - **Operators**: Arithmetic (`+`, `-`, `*`, `/`, `**`), comparison (`>`, `==`, `<=`)
 - **Math module**: `math.sqrt()`, `math.cos()`, `math.exp()`
+
+??? tip "Augmented Assignment Operators"
+
+    Python provides shorthand operators to modify a variable in place:
+
+    | Operator | Equivalent to | Example |
+    |----------|---------------|---------|
+    | `+=` | `x = x + a` | `count += 1` |
+    | `-=` | `x = x - a` | `energy -= loss` |
+    | `*=` | `x = x * a` | `amplitude *= 2` |
+    | `/=` | `x = x / a` | `intensity /= 10` |
+    | `**=` | `x = x ** a` | `value **= 2` |
+
+    ```python
+    # Accumulate total energy in a loop
+    total_energy = 0.0
+    for particle_energy in [10.5, 23.1, 15.8]:
+        total_energy += particle_energy  # Same as: total_energy = total_energy + particle_energy
+    print(total_energy)  # 49.4
+    ```
+- **Functions**: Reusable blocks of code that perform a specific task
+- **Classes**: Blueprints for creating objects that bundle data and behavior together
+
+#### Functions
+
+A **function** is a named block of code that performs a specific task and can be reused. Functions help organize code and avoid repetition.
+
+```python
+def calculate_energy(mass, velocity):
+    """Calculate kinetic energy."""
+    return 0.5 * mass * velocity ** 2
+
+# Call the function
+E = calculate_energy(1.5, 10.0)  # Returns 75.0
+```
+
+Key elements:
+
+- `def` keyword to define the function
+- **Parameters** (`mass`, `velocity`): inputs the function receives
+- `return` statement: sends a value back to the caller
+- **Docstring**: optional description inside `"""`
+
+#### Classes
+
+A **class** is a template for creating objects that group related data (attributes) and functions (methods) together.
+
+```python
+class Particle:
+    """A simple particle with mass and velocity."""
+
+    def __init__(self, mass, velocity):
+        self.mass = mass          # attribute
+        self.velocity = velocity  # attribute
+
+    def kinetic_energy(self):     # method
+        return 0.5 * self.mass * self.velocity ** 2
+
+# Create an object (instance)
+proton = Particle(1.67e-27, 1e6)
+E = proton.kinetic_energy()
+```
+
+Key elements:
+
+- `class` keyword to define the class
+- `__init__`: special method called when creating an object
+- `self`: refers to the current object instance
+- **Attributes**: data stored in the object (`self.mass`)
+- **Methods**: functions that belong to the class
 
 ### Exercise 1.2 (25 min)
 
