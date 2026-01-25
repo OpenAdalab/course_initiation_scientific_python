@@ -518,79 +518,10 @@ data.dropna(subset=['energy'])    # Drop only if energy is NaN
 
 ---
 
-## Exercice (Bonus) Integration Example
+### Exercice (Bonus) Integration Example
+📓 **Continue in the notebook:** [day1_afternoon_exercises.ipynb](../notebooks/day1_afternoon_exercises.ipynb)
 
 Let's combine lists, NumPy, and Pandas in a realistic analysis
-
-??? info "Solution"
-    ```python
-    import numpy as np
-    import pandas as pd
-    import matplotlib.pyplot as plt
-
-    # Generate simulated collision events
-    np.random.seed(42)
-    n_events = 1000
-
-    # Create event data
-    events = pd.DataFrame({
-        'event': range(n_events),
-        'n_particles': np.random.poisson(5, n_events),
-        'trigger': np.random.choice([True, False], n_events, p=[0.7, 0.3])
-    })
-
-    # Apply trigger cut
-    triggered_events = events[events['trigger']]
-
-    # Generate particle-level data for triggered events
-    particle_data = []
-    for idx, row in triggered_events.iterrows():
-        for i in range(row['n_particles']):
-            particle_data.append({
-                'event': row['event'],
-                'energy': np.random.exponential(30),
-                'eta': np.random.uniform(-2.5, 2.5),
-                'phi': np.random.uniform(-np.pi, np.pi)
-            })
-
-    particles = pd.DataFrame(particle_data)
-
-    # Calculate transverse energy
-    particles['Et'] = particles['energy'] / np.cosh(particles['eta'])
-
-    # Event selection: at least one high-Et particle
-    good_events = particles[particles['Et'] > 50]['event'].unique()
-    final_data = particles[particles['event'].isin(good_events)]
-
-    print(f"Started with {n_events} events")
-    print(f"After trigger: {len(triggered_events)} events")
-    print(f"After Et cut: {len(good_events)} events")
-    print(f"Final particles: {len(final_data)}")
-
-    # Visualize
-    plt.figure(figsize=(12, 4))
-
-    plt.subplot(1, 3, 1)
-    plt.hist(particles['energy'], bins=50)
-    plt.xlabel('Energy (GeV)')
-    plt.ylabel('Particles')
-
-    plt.subplot(1, 3, 2)
-    plt.hist(particles['Et'], bins=50)
-    plt.xlabel('Et (GeV)')
-    plt.ylabel('Particles')
-
-    plt.subplot(1, 3, 3)
-    plt.hist2d(particles['eta'], particles['phi'], bins=30)
-    plt.xlabel('η')
-    plt.ylabel('φ')
-    plt.colorbar(label='Particles')
-
-    plt.tight_layout()
-    plt.show()
-    ```
-
----
 
 ## Key Takeaways
 
