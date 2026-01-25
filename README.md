@@ -49,7 +49,7 @@ git clone https://github.com/OpenAdalab/course_initiation_scientific_python.git
 cd course_initiation_scientific_python
 
 # Create conda environment (recommended)
-conda create -n python-physics python=3.10
+conda create -n python-physics python=3.13
 conda activate python-physics
 
 # Install dependencies
