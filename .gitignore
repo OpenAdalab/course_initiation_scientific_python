@@ -1,5 +1,9 @@
 gestion/
 assets/
+notebooks/demo/
+notebooks/.ipynb_checkpoints/
+
 CLAUDE.md
 Makefile
+
 site/    
