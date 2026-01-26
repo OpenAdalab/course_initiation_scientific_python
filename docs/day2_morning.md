@@ -167,181 +167,236 @@ print(f"Speedup: {time_loop/time_vec:.1f}x")
 
 ## 2. Advanced Pandas Techniques (1h 15min)
 
-### Multi-level Indexing (MultiIndex)
+### The `map()` Method: Dictionary Lookups
 
-MultiIndex allows hierarchical indexing for complex data structures:
+The `map()` method applies a mapping (dictionary or function) to each element of a Series. It's perfect for lookups and simple transformations:
 
 ```python
 import pandas as pd
 import numpy as np
 
-# Create MultiIndex DataFrame for run/event/particle structure
-arrays = [
-    ['Run1', 'Run1', 'Run1', 'Run2', 'Run2'],
-    [1, 1, 2, 1, 1],
-    [0, 1, 0, 0, 1]
-]
-index = pd.MultiIndex.from_arrays(arrays, names=['run', 'event', 'particle'])
-
+# Sample detector data
 df = pd.DataFrame({
-    'pt': [45.2, 32.1, 67.8, 23.4, 89.1],
-    'eta': [-0.5, 1.2, -1.8, 0.3, 2.1],
-    'particle_type': ['e', 'mu', 'e', 'mu', 'e']
-}, index=index)
+    'detector': ['barrel', 'endcap', 'barrel', 'endcap', 'barrel'],
+    'energy_raw': [45.2, 52.1, 38.7, 61.3, 42.8]
+})
+
+# Apply calibration factors using a dictionary
+calibration = {
+    'barrel': 1.02,
+    'endcap': 1.05
+}
+
+df['cal_factor'] = df['detector'].map(calibration)
+df['energy_cal'] = df['energy_raw'] * df['cal_factor']
 
 print(df)
-
-# Access data at different levels
-print(df.loc['Run1'])           # All data from Run1
-print(df.loc[('Run1', 1)])      # Event 1 from Run1
-print(df.loc[('Run1', 1, 0)])   # First particle in Event 1, Run1
+#   detector  energy_raw  cal_factor  energy_cal
+# 0   barrel        45.2        1.02       46.10
+# 1   endcap        52.1        1.05       54.71
+# 2   barrel        38.7        1.02       39.47
+# ...
 ```
 
-### Working with MultiIndex
+**When to use `map()`:**
 
-```python
-# Reset and set index
-df_flat = df.reset_index()
-df_multi = df_flat.set_index(['run', 'event', 'particle'])
+- Looking up values from a dictionary
+- Simple element-wise transformations
+- Converting codes to labels (e.g., particle IDs to names)
 
-# Cross-section selection with xs
-print(df.xs('Run1', level='run'))
-print(df.xs(1, level='event'))
+### The `groupby()` Method: Split-Apply-Combine
 
-# Aggregation at different levels
-print(df.groupby(level='run').mean())
-print(df.groupby(level=['run', 'event']).sum())
+`groupby()` is one of the most powerful Pandas operations. It follows the **split-apply-combine** pattern:
 
-# Swap and sort levels
-df_swapped = df.swaplevel('run', 'event')
-df_sorted = df.sort_index()
+```
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│   SPLIT     │────►│   APPLY     │────►│  COMBINE    │
+│  by groups  │     │  function   │     │  results    │
+└─────────────┘     └─────────────┘     └─────────────┘
 ```
 
-### Applying Custom Functions
+```python
+# Sample data with multiple runs and detectors
+df = pd.DataFrame({
+    'run': [1, 1, 1, 2, 2, 2],
+    'detector': ['barrel', 'endcap', 'barrel', 'barrel', 'endcap', 'endcap'],
+    'energy': [45.2, 52.1, 38.7, 61.3, 42.8, 55.9]
+})
+
+# Group by single column
+by_run = df.groupby('run')
+
+# Basic aggregations
+print(by_run['energy'].mean())    # Mean energy per run
+print(by_run['energy'].sum())     # Total energy per run
+print(by_run['energy'].count())   # Number of events per run
+
+# Group by multiple columns
+by_run_detector = df.groupby(['run', 'detector'])
+print(by_run_detector['energy'].mean())
+```
+
+### The `agg()` Method: Multiple Aggregations
+
+`agg()` allows applying multiple aggregation functions at once:
 
 ```python
-# apply: works on columns or rows
-df['pt_squared'] = df['pt'].apply(lambda x: x**2)
+# Single column, multiple functions
+stats = df.groupby('run')['energy'].agg(['mean', 'std', 'min', 'max', 'count'])
+print(stats)
+#       mean        std   min   max  count
+# run
+# 1    45.33   6.70...  38.7  52.1      3
+# 2    53.33   9.42...  42.8  61.3      3
 
-# map: works on Series elements
-particle_mass = {'e': 0.000511, 'mu': 0.105, 'photon': 0}
-df['mass'] = df['particle_type'].map(particle_mass)
+# Multiple columns, different functions
+summary = df.groupby('run').agg({
+    'energy': ['mean', 'std'],    # Mean and std for energy
+    'detector': 'count'           # Count of detectors (= number of rows)
+})
+print(summary)
 
-# apply with custom function
-def calculate_momentum(row):
-    pt = row['pt']
-    eta = row['eta']
-    pz = pt * np.sinh(eta)
-    return np.sqrt(pt**2 + pz**2)
+# Rename columns for clarity
+summary.columns = ['energy_mean', 'energy_std', 'n_events']
+print(summary)
+```
 
-df['p'] = df.apply(calculate_momentum, axis=1)
+### Common Aggregation Functions
 
-# Transform: returns same shape as input
-df['pt_normalized'] = df.groupby('particle_type')['pt'].transform(
+| Function | Description | Example |
+|----------|-------------|---------|
+| `mean()` | Average value | Mean energy per run |
+| `sum()` | Total | Total pT in event |
+| `count()` | Number of non-null values | Particles per event |
+| `min()` / `max()` | Minimum / Maximum | Leading particle pT |
+| `std()` | Standard deviation | Energy spread |
+| `first()` / `last()` | First / Last value | First particle in event |
+
+### Finding Specific Rows with `idxmax()` / `idxmin()`
+
+To find which row has the maximum or minimum value:
+
+```python
+# Particle data with multiple particles per event
+particles = pd.DataFrame({
+    'event': [1, 1, 1, 2, 2, 3],
+    'particle_type': ['e', 'mu', 'photon', 'e', 'mu', 'e'],
+    'pt': [45.2, 32.1, 12.5, 67.8, 23.4, 89.1]
+})
+
+# Find index of leading (highest pT) particle in each event
+leading_idx = particles.groupby('event')['pt'].idxmax()
+print(leading_idx)
+# event
+# 1    0
+# 2    3
+# 3    5
+
+# Get the actual rows
+leading_particles = particles.loc[leading_idx]
+print(leading_particles)
+#    event particle_type    pt
+# 0      1             e  45.2
+# 3      2             e  67.8
+# 5      3             e  89.1
+```
+
+### The `transform()` Method: Same-Shape Output
+
+Unlike `agg()` which reduces data, `transform()` returns data with the same shape as the input. Useful for adding group-level statistics back to the DataFrame:
+
+```python
+# Add mean energy per run as a new column
+df['run_mean_energy'] = df.groupby('run')['energy'].transform('mean')
+
+# Normalize energy within each run
+df['energy_normalized'] = df.groupby('run')['energy'].transform(
     lambda x: (x - x.mean()) / x.std()
 )
+
+print(df)
 ```
 
-### Combining Datasets
+### Combining Datasets with `merge()`
 
 ```python
-# merge: SQL-style joins
+# Event-level information
 events = pd.DataFrame({
     'event_id': [1, 2, 3],
     'luminosity': [1.5e33, 1.6e33, 1.4e33],
     'trigger': [True, False, True]
 })
 
+# Particle-level information
 particles = pd.DataFrame({
     'event_id': [1, 1, 2, 3, 3],
     'particle': ['e', 'mu', 'e', 'mu', 'e'],
     'pt': [30, 25, 45, 20, 35]
 })
 
-# Inner join (default)
+# Merge: add event info to each particle
 merged = pd.merge(particles, events, on='event_id')
+print(merged)
 
-# Left join: keep all particles
-merged_left = pd.merge(particles, events, on='event_id', how='left')
-
-# concat: stack DataFrames
-run1 = pd.DataFrame({'event': [1, 2], 'energy': [100, 150]})
-run2 = pd.DataFrame({'event': [1, 2], 'energy': [120, 180]})
-
-# Vertical stacking
-all_runs = pd.concat([run1, run2], keys=['run1', 'run2'])
-
-# Horizontal stacking
-combined = pd.concat([run1, run2], axis=1, keys=['run1', 'run2'])
+# Filter to triggered events only
+triggered = merged[merged['trigger'] == True]
 ```
 
-### Optimizing Memory with Categorical Data
+??? tip "Advanced: Pivot Tables for Summary Statistics"
+    Pivot tables provide a spreadsheet-style summary across two dimensions:
 
-```python
-# Large dataset with repeating strings
-n = 1_000_000
-df = pd.DataFrame({
-    'particle_type': np.random.choice(['electron', 'muon', 'photon'], n),
-    'detector': np.random.choice(['barrel', 'endcap'], n),
-    'energy': np.random.exponential(50, n)
-})
+    ```python
+    # Basic pivot table: mean energy by run and detector
+    pivot = pd.pivot_table(
+        df,
+        values='energy',
+        index='run',
+        columns='detector',
+        aggfunc='mean'
+    )
+    print(pivot)
+    #          barrel  endcap
+    # run
+    # 1         41.95   52.10
+    # 2         61.30   49.35
 
-print(f"Memory usage (object): {df.memory_usage(deep=True).sum() / 1e6:.1f} MB")
+    # Multiple aggregation functions
+    pivot_multi = pd.pivot_table(
+        df,
+        values='energy',
+        index='run',
+        columns='detector',
+        aggfunc=['mean', 'std', 'count']
+    )
+    ```
 
-# Convert to categorical
-df['particle_type'] = df['particle_type'].astype('category')
-df['detector'] = df['detector'].astype('category')
+??? tip "Advanced: Multi-level Indexing (MultiIndex)"
+    MultiIndex allows hierarchical indexing for complex data structures:
 
-print(f"Memory usage (category): {df.memory_usage(deep=True).sum() / 1e6:.1f} MB")
-```
+    ```python
+    # Create MultiIndex DataFrame
+    df_multi = df.set_index(['run', 'detector'])
+    print(df_multi)
 
-### Pivot Tables for Summary Statistics
+    # Access data at different levels
+    print(df_multi.loc[1])              # All data from run 1
+    print(df_multi.loc[(1, 'barrel')])  # Run 1, barrel only
 
-Pivot tables are powerful for summarizing data across multiple dimensions:
+    # Cross-section selection with xs
+    print(df_multi.xs('barrel', level='detector'))  # All barrel data
+    ```
 
-```python
-# Sample detector data
-df = pd.DataFrame({
-    'run': [1, 1, 1, 2, 2, 2],
-    'detector': ['barrel', 'barrel', 'endcap', 'barrel', 'endcap', 'endcap'],
-    'energy': [45.2, 52.1, 38.7, 61.3, 42.8, 55.9]
-})
+??? tip "Advanced: Memory Optimization with Categorical Data"
+    For large datasets with repeating string values, use categorical dtype:
 
-# Basic pivot table: mean energy by run and detector
-pivot = pd.pivot_table(
-    df,
-    values='energy',
-    index='run',
-    columns='detector',
-    aggfunc='mean'
-)
-print(pivot)
-#          barrel  endcap
-# run
-# 1         48.65   38.70
-# 2         61.30   49.35
+    ```python
+    # Convert string columns to categorical
+    df['detector'] = df['detector'].astype('category')
+    df['particle_type'] = df['particle_type'].astype('category')
 
-# Multiple aggregation functions
-pivot_multi = pd.pivot_table(
-    df,
-    values='energy',
-    index='run',
-    columns='detector',
-    aggfunc=['mean', 'std', 'count']
-)
-print(pivot_multi)
-
-# Add margins (row/column totals)
-pivot_margins = pd.pivot_table(
-    df,
-    values='energy',
-    index='run',
-    columns='detector',
-    aggfunc='mean',
-    margins=True,
-    margins_name='Total'
-)
-```
+    # Can reduce memory usage by 90%+ for string columns
+    print(df.memory_usage(deep=True))
+    ```
 
 ### Exercise 2.2 (45 min)
 
@@ -349,8 +404,8 @@ pivot_margins = pd.pivot_table(
 
 | Level | Task |
 |-------|------|
-| **Beginner** | Apply energy calibrations, create pivot tables for run statistics |
-| **Advanced** | Build hierarchical data structure (run → event → particle), optimize memory |
+| **Beginner** | Apply energy calibrations with `map()`, calculate statistics with `groupby()` and `agg()` |
+| **Advanced** | Build hierarchical data analysis (run → event → particle), find leading particles |
 
 ---
 
