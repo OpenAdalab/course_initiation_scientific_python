@@ -661,14 +661,113 @@ Key elements:
 
 ---
 
-## Key Takeaways
+## Summary
 
-!!! success "What We Learned"
-    - Python is the standard for scientific analysis
-    - **NumPy arrays** are the foundation for numerical computing
-    - The **scientific stack** (NumPy, SciPy, Matplotlib, Pandas) provides all tools needed
-    - **Jupyter notebooks** enable interactive, reproducible analysis
-    - Vectorized operations are much faster than loops
+### Python Data Types
+
+| Type | Description | Example |
+|------|-------------|---------|
+| `int` | Integer numbers | `n_particles = 42` |
+| `float` | Decimal numbers | `energy = 91.2` |
+| `complex` | Complex numbers | `z = 3 + 4j` |
+| `str` | Text strings | `name = "electron"` |
+| `bool` | Boolean values | `is_valid = True` |
+| `list` | Ordered, mutable collection | `[1, 2, 3]` |
+| `tuple` | Ordered, immutable collection | `(x, y, z)` |
+| `dict` | Key-value pairs | `{"mass": 0.511, "charge": -1}` |
+
+### Basic Arithmetic Operations
+
+```python
+# Arithmetic operators
+a + b    # Addition
+a - b    # Subtraction
+a * b    # Multiplication
+a / b    # Division (returns float)
+a // b   # Integer division
+a % b    # Modulo (remainder)
+a ** b   # Exponentiation (power)
+```
+
+### Indexing and Slicing
+
+Access elements in sequences (lists, strings, arrays) using indices starting at 0:
+
+```python
+data = [10, 20, 30, 40, 50]
+
+data[0]      # First element → 10
+data[-1]     # Last element → 50
+data[1:3]    # Elements 1 to 2 → [20, 30]
+data[::2]    # Every 2nd element → [10, 30, 50]
+data[::-1]   # Reversed → [50, 40, 30, 20, 10]
+```
+
+### For Loops
+
+Iterate over sequences to repeat operations:
+
+```python
+# Loop over a list
+energies = [10.5, 23.1, 15.8]
+total = 0
+for E in energies:
+    total += E
+
+# Loop with index using range()
+for i in range(5):       # i = 0, 1, 2, 3, 4
+    print(f"Step {i}")
+
+# Loop with index and value using enumerate()
+for i, E in enumerate(energies):
+    print(f"Particle {i}: E = {E} GeV")
+```
+
+### Conditional Instructions
+
+Control program flow based on conditions:
+
+```python
+energy = 85.0
+
+if energy > 100:
+    print("High energy")
+elif energy > 50:
+    print("Medium energy")
+else:
+    print("Low energy")
+
+# Comparison operators: ==, !=, <, >, <=, >=
+# Logical operators: and, or, not
+```
+
+### Lists vs NumPy Arrays
+
+| Feature | Python List | NumPy Array |
+|---------|-------------|-------------|
+| **Content** | Any type mixed | Single type (homogeneous) |
+| **Operations** | Element by element (loops) | Vectorized (whole array) |
+| **Performance** | Slow for large data | Fast (C-optimized) |
+| **Memory** | More overhead | Compact, efficient |
+| **Functions** | Basic Python | Rich mathematical functions |
+
+```python
+# List: operations require loops
+numbers = [1, 2, 3, 4, 5]
+squared = [x**2 for x in numbers]  # List comprehension
+
+# NumPy array: vectorized operations
+import numpy as np
+arr = np.array([1, 2, 3, 4, 5])
+squared = arr ** 2  # Applies to all elements at once
+```
+
+!!! success "Key Points"
+    - Python is **dynamically typed** but **strongly typed**
+    - Use **lists** for small, mixed-type collections
+    - Use **NumPy arrays** for numerical computing (much faster!)
+    - **Vectorized operations** avoid slow Python loops
+    - The **scientific stack** (NumPy, SciPy, Matplotlib, Pandas) provides all tools needed for data analysis
 
 ---
 
