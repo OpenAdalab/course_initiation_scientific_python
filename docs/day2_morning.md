@@ -401,7 +401,7 @@ triggered = merged[merged['trigger'] == True]
 
 ### Exercise 2.2 (45 min)
 
-📓 **Continue in the notebook:** [day2_morning_exercises.ipynb](../notebooks/day2_morning_exercises.ipynb)
+📓 **Continue in the notebook:** [day2_morning_exercises.ipynb](https://github.com/OpenAdalab/course_initiation_scientific_python/blob/main/notebooks/day2_morning_exercises.ipynb)
 
 | Level | Task |
 |-------|------|
@@ -637,7 +637,7 @@ fig.savefig('plot.png', dpi=300, bbox_inches='tight')
 
 ### Exercise 2.3 (30 min)
 
-📓 **Continue in the notebook:** [day2_morning_exercises.ipynb](../notebooks/day2_morning_exercises.ipynb)
+📓 **Continue in the notebook:** [day2_morning_exercises.ipynb](https://github.com/OpenAdalab/course_initiation_scientific_python/blob/main/notebooks/day2_morning_exercises.ipynb)
 
 | Level | Task |
 |-------|------|

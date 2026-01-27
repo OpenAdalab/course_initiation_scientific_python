@@ -450,6 +450,8 @@ import uproot
 tree = uproot.open('data.root')['tree_name']
 df = tree.arrays(library='pd')  # Convert to pandas
 ```
+??? tip "IO on different file format"
+    Pandas can [load and save data in numerous formats !](https://pandas.pydata.org/docs/user_guide/io.html)
 
 ### Basic Operations
 
