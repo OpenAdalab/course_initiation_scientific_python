@@ -635,6 +635,9 @@ fig.savefig('plot.pdf', dpi=300, bbox_inches='tight')
 fig.savefig('plot.png', dpi=300, bbox_inches='tight')
 ```
 
+??? tip "To go further with interactive ploting"
+    Let's have a look at the package [plotly](https://plotly.com/examples/)
+
 ### Exercise 2.3 (30 min)
 
 📓 **Continue in the notebook:** [day2_morning_exercises.ipynb](https://github.com/OpenAdalab/course_initiation_scientific_python/blob/main/notebooks/day2_morning_exercises.ipynb)
