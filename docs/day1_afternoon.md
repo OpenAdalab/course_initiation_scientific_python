@@ -321,7 +321,7 @@ sorted_indices = np.argsort(energies)  # Indices that would sort
 
 ### Exercise 1.5 (50 min)
 
-📓 **Continue in the notebook:** [day1_afternoon_exercises.ipynb](../notebooks/day1_afternoon_exercises.ipynb)
+📓 **Continue in the notebook:** [day1_afternoon_exercises.ipynb](https://github.com/OpenAdalab/course_initiation_scientific_python/blob/main/notebooks/day1_afternoon_exercises.ipynb)
 
 | Level | Task |
 |-------|------|
@@ -511,7 +511,7 @@ data.dropna(subset=['energy'])    # Drop only if energy is NaN
 
 ### Exercise 1.6 (35 min)
 
-📓 **Continue in the notebook:** [day1_afternoon_exercises.ipynb](../notebooks/day1_afternoon_exercises.ipynb)
+📓 **Continue in the notebook:** [day1_afternoon_exercises.ipynb](https://github.com/OpenAdalab/course_initiation_scientific_python/blob/main/notebooks/day1_afternoon_exercises.ipynb)
 
 | Level | Task |
 |-------|------|
@@ -521,7 +521,7 @@ data.dropna(subset=['energy'])    # Drop only if energy is NaN
 ---
 
 ### Exercice (Bonus) Integration Example
-📓 **Continue in the notebook:** [day1_afternoon_exercises.ipynb](../notebooks/day1_afternoon_exercises.ipynb)
+📓 **Continue in the notebook:** [day1_afternoon_exercises.ipynb](https://github.com/OpenAdalab/course_initiation_scientific_python/blob/main/notebooks/day1_afternoon_exercises.ipynb  )
 
 Let's combine lists, NumPy, and Pandas in a realistic analysis
 
