@@ -2,6 +2,7 @@ gestion/
 assets/
 notebooks/demo/
 notebooks/.ipynb_checkpoints/
+.ipynb_checkpoints/
 
 CLAUDE.md
 Makefile
