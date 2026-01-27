@@ -37,29 +37,30 @@ mask = data > 10
 data[mask] = 0  # Set all values > 10 to 0
 ```
 
-### np.meshgrid for 2D Parameter Scans
+??? "Optionnal : creating 2D meshgrid"
+    ### np.meshgrid for 2D Parameter Scans
 
-`meshgrid` creates coordinate matrices from coordinate vectors - essential for 2D calculations:
+    `meshgrid` creates coordinate matrices from coordinate vectors - essential for 2D calculations:
 
-```python
-# Create 2D grid for detector simulation
-x = np.linspace(-2, 2, 5)   # x positions
-y = np.linspace(-1, 1, 3)   # y positions
+    ```python
+    # Create 2D grid for detector simulation
+    x = np.linspace(-2, 2, 5)   # x positions
+    y = np.linspace(-1, 1, 3)   # y positions
 
-X, Y = np.meshgrid(x, y)
-print("X grid:\n", X)
-print("Y grid:\n", Y)
+    X, Y = np.meshgrid(x, y)
+    print("X grid:\n", X)
+    print("Y grid:\n", Y)
 
-# Calculate distance from origin at each point
-R = np.sqrt(X**2 + Y**2)
-print("Distance from origin:\n", R)
+    # Calculate distance from origin at each point
+    R = np.sqrt(X**2 + Y**2)
+    print("Distance from origin:\n", R)
 
-# Example: 2D Gaussian for detector response
-def gaussian_2d(X, Y, x0, y0, sigma):
-    return np.exp(-((X-x0)**2 + (Y-y0)**2) / (2*sigma**2))
+    # Example: 2D Gaussian for detector response
+    def gaussian_2d(X, Y, x0, y0, sigma):
+        return np.exp(-((X-x0)**2 + (Y-y0)**2) / (2*sigma**2))
 
-response = gaussian_2d(X, Y, 0, 0, 1.0)
-```
+    response = gaussian_2d(X, Y, 0, 0, 1.0)
+    ```
 
 ### Linear Algebra Operations
 
@@ -423,6 +424,8 @@ Figure (container)
     ├── Lines, Patches, Text...
     └── Legend
 ```
+???+ tip "A graphical summary of a figure part"
+    [The different part of the figure in matplotib](https://matplotlib.org/stable/users/explain/quick_start.html#parts-of-a-figure)
 
 ```python
 import matplotlib.pyplot as plt
@@ -657,7 +660,7 @@ fig.savefig('plot.png', dpi=300, bbox_inches='tight')
     - Create reusable plotting functions for consistency
     - Save figures in vector format (PDF) for publications
 
-!!! info "This Afternoon"
+??? info "This Afternoon"
     Day 2 Afternoon will cover:
 
     - Writing reusable analysis functions

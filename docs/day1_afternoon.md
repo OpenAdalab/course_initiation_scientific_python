@@ -533,7 +533,7 @@ Let's combine lists, NumPy, and Pandas in a realistic analysis
         - Vectorized operations (100x faster than loops!)
         - Multi-dimensional arrays for complex data
     - **Pandas DataFrames**: Ideal for tabular particle physics data
-        - Easy data loading, filtering, and grouping
+        - Easy data loading, saving, filtering, and grouping
         - SQL-like operations (merge, groupby)
         - Seamless integration with NumPy
 
