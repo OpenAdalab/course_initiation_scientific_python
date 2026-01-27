@@ -135,107 +135,101 @@ def analyze_distribution(data):
 stats = analyze_distribution(energies)
 print(f"Mean: {stats['mean']:.2f}")
 ```
+???+ tip "Type Hints for improving clarity"
+    Type hints make code more readable and enable IDE support:
 
-### Type Hints for Clarity
+    ```python
+    import numpy as np
+    from typing import List, Tuple, Dict, Optional, Union
+    import pandas as pd
 
-Type hints make code more readable and enable IDE support:
+    def calculate_pt(px: float, py: float) -> float:
+        """Calculate transverse momentum."""
+        return np.sqrt(px**2 + py**2)
 
-```python
-import numpy as np
-from typing import List, Tuple, Dict, Optional, Union
-import pandas as pd
+    def apply_cuts(
+        df: pd.DataFrame,
+        pt_min: float = 20.0,
+        eta_max: float = 2.5
+    ) -> pd.DataFrame:
+        """Apply kinematic cuts to DataFrame."""
+        mask = (df['pt'] > pt_min) & (np.abs(df['eta']) < eta_max)
+        return df[mask]
 
-def calculate_pt(px: float, py: float) -> float:
-    """Calculate transverse momentum."""
-    return np.sqrt(px**2 + py**2)
+    def find_pairs(
+        particles: List[Dict[str, float]]
+    ) -> List[Tuple[int, int]]:
+        """Find all particle pairs."""
+        pairs = []
+        n = len(particles)
+        for i in range(n):
+            for j in range(i + 1, n):
+                pairs.append((i, j))
+        return pairs
 
-def apply_cuts(
-    df: pd.DataFrame,
-    pt_min: float = 20.0,
-    eta_max: float = 2.5
-) -> pd.DataFrame:
-    """Apply kinematic cuts to DataFrame."""
-    mask = (df['pt'] > pt_min) & (np.abs(df['eta']) < eta_max)
-    return df[mask]
+    def get_efficiency(
+        pt: float,
+        eta: float,
+        efficiency_map: Optional[np.ndarray] = None
+    ) -> float:
+        """Look up detector efficiency."""
+        if efficiency_map is None:
+            return 0.95  # Default efficiency
+        # Look up in map...
+        return 0.95
+    ```
+??? tip "Optionnal : Lambda Functions" 
+    Short anonymous functions for simple operations:
 
-def find_pairs(
-    particles: List[Dict[str, float]]
-) -> List[Tuple[int, int]]:
-    """Find all particle pairs."""
-    pairs = []
-    n = len(particles)
-    for i in range(n):
-        for j in range(i + 1, n):
-            pairs.append((i, j))
-    return pairs
+    ```python
+    import numpy as np
+    import pandas as pd
 
-def get_efficiency(
-    pt: float,
-    eta: float,
-    efficiency_map: Optional[np.ndarray] = None
-) -> float:
-    """Look up detector efficiency."""
-    if efficiency_map is None:
-        return 0.95  # Default efficiency
-    # Look up in map...
-    return 0.95
-```
+    # Lambda syntax: lambda arguments: expression
+    square = lambda x: x**2
+    print(square(5))  # 25
 
-### Lambda Functions
+    # Useful with apply
+    df = pd.DataFrame({'energy': [10, 20, 30, 40]})
+    df['energy_gev'] = df['energy'].apply(lambda x: x / 1000)
 
-Short anonymous functions for simple operations:
+    # Useful with map
+    masses = [0.000511, 0.105, 1.777]  # e, mu, tau masses
+    masses_mev = list(map(lambda m: m * 1000, masses))
 
-```python
-import numpy as np
-import pandas as pd
+    # Useful with filter
+    energies = [15, 45, 23, 67, 12, 89]
+    high_energy = list(filter(lambda e: e > 50, energies))
 
-# Lambda syntax: lambda arguments: expression
-square = lambda x: x**2
-print(square(5))  # 25
+    # Useful with sorted
+    particles = [
+        {'name': 'electron', 'mass': 0.000511},
+        {'name': 'muon', 'mass': 0.105},
+        {'name': 'tau', 'mass': 1.777}
+    ]
+    sorted_by_mass = sorted(particles, key=lambda p: p['mass'])
+    ```
+??? tip "Optionnal Functional Programming Concepts"
+    ```python
+    from functools import reduce
 
-# Useful with apply
-df = pd.DataFrame({'energy': [10, 20, 30, 40]})
-df['energy_gev'] = df['energy'].apply(lambda x: x / 1000)
+    # map: apply function to all elements
+    energies = [10, 20, 30, 40, 50]
+    squared = list(map(lambda x: x**2, energies))
+    # Same as: [x**2 for x in energies]
 
-# Useful with map
-masses = [0.000511, 0.105, 1.777]  # e, mu, tau masses
-masses_mev = list(map(lambda m: m * 1000, masses))
+    # filter: select elements matching condition
+    high = list(filter(lambda x: x > 25, energies))
+    # Same as: [x for x in energies if x > 25]
 
-# Useful with filter
-energies = [15, 45, 23, 67, 12, 89]
-high_energy = list(filter(lambda e: e > 50, energies))
+    # reduce: combine elements into single value
+    total = reduce(lambda a, b: a + b, energies)
+    # Same as: sum(energies)
 
-# Useful with sorted
-particles = [
-    {'name': 'electron', 'mass': 0.000511},
-    {'name': 'muon', 'mass': 0.105},
-    {'name': 'tau', 'mass': 1.777}
-]
-sorted_by_mass = sorted(particles, key=lambda p: p['mass'])
-```
-
-### Functional Programming Concepts
-
-```python
-from functools import reduce
-
-# map: apply function to all elements
-energies = [10, 20, 30, 40, 50]
-squared = list(map(lambda x: x**2, energies))
-# Same as: [x**2 for x in energies]
-
-# filter: select elements matching condition
-high = list(filter(lambda x: x > 25, energies))
-# Same as: [x for x in energies if x > 25]
-
-# reduce: combine elements into single value
-total = reduce(lambda a, b: a + b, energies)
-# Same as: sum(energies)
-
-# Chaining with comprehensions (preferred in Python)
-result = [x**2 for x in energies if x > 25]
-```
-??? info "Decorators (Advenced)"
+    # Chaining with comprehensions (preferred in Python)
+    result = [x**2 for x in energies if x > 25]
+    ```
+??? info "Decorators (Advanced)"
     Decorators modify function behavior:
 
     ```python
@@ -347,7 +341,7 @@ print(electron.mass)  # 0.000511
 muon.info()  # muon: m=0.105 GeV/c², q=-1e
 ```
 
-### The Particle Class with 4-Momentum
+### (Optionnal) Advanced exemples : The Particle Class with 4-Momentum
 
 ```python
 import numpy as np

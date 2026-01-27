@@ -203,55 +203,55 @@ except ValueError as e:
     print(f"Validation failed: {e}")
 ```
 
-### Custom Exceptions
 
-```python
-class AnalysisError(Exception):
-    """Base exception for analysis errors."""
-    pass
+??? "Optionnal : Custom Exceptions"
+    ```python
+    class AnalysisError(Exception):
+        """Base exception for analysis errors."""
+        pass
 
-class InvalidEventError(AnalysisError):
-    """Raised when event data is invalid."""
-    def __init__(self, event_id, message):
-        self.event_id = event_id
-        self.message = message
-        super().__init__(f"Event {event_id}: {message}")
+    class InvalidEventError(AnalysisError):
+        """Raised when event data is invalid."""
+        def __init__(self, event_id, message):
+            self.event_id = event_id
+            self.message = message
+            super().__init__(f"Event {event_id}: {message}")
 
-class EfficiencyMapError(AnalysisError):
-    """Raised when efficiency map is invalid."""
-    pass
+    class EfficiencyMapError(AnalysisError):
+        """Raised when efficiency map is invalid."""
+        pass
 
-class PhysicsConstraintError(AnalysisError):
-    """Raised when physics constraints are violated."""
-    pass
+    class PhysicsConstraintError(AnalysisError):
+        """Raised when physics constraints are violated."""
+        pass
 
-# Usage
-def process_event(event):
-    """Process a single event with custom exceptions."""
-    if event['n_muons'] < 2:
-        raise InvalidEventError(
-            event['event_id'],
-            f"Need 2 muons, found {event['n_muons']}"
-        )
+    # Usage
+    def process_event(event):
+        """Process a single event with custom exceptions."""
+        if event['n_muons'] < 2:
+            raise InvalidEventError(
+                event['event_id'],
+                f"Need 2 muons, found {event['n_muons']}"
+            )
 
-    mass = calculate_invariant_mass(event)
-    if mass > 1000:  # GeV
-        raise PhysicsConstraintError(
-            f"Unphysical mass: {mass:.1f} GeV"
-        )
+        mass = calculate_invariant_mass(event)
+        if mass > 1000:  # GeV
+            raise PhysicsConstraintError(
+                f"Unphysical mass: {mass:.1f} GeV"
+            )
 
-    return mass
+        return mass
 
-# Handle specific exceptions
-try:
-    result = process_event({'event_id': 123, 'n_muons': 1})
-except InvalidEventError as e:
-    print(f"Skipping invalid event: {e}")
-except PhysicsConstraintError as e:
-    print(f"Physics problem: {e}")
-except AnalysisError as e:
-    print(f"Analysis error: {e}")
-```
+    # Handle specific exceptions
+    try:
+        result = process_event({'event_id': 123, 'n_muons': 1})
+    except InvalidEventError as e:
+        print(f"Skipping invalid event: {e}")
+    except PhysicsConstraintError as e:
+        print(f"Physics problem: {e}")
+    except AnalysisError as e:
+        print(f"Analysis error: {e}")
+    ```
 
 ### Exercise 3.1 (35 min)
 
@@ -287,6 +287,42 @@ pytest is Python's most popular testing framework:
 ```bash
 # Install pytest
 pip install pytest
+```
+
+#### How pytest Works
+
+When you run `pytest`, it automatically:
+
+1. **Discovers tests**: Searches for files named `test_*.py` or `*_test.py`
+2. **Collects test functions**: Finds functions starting with `test_`
+3. **Runs each test in isolation**: Each test runs independently
+4. **Reports results**: Shows passed ✓, failed ✗, or error status
+
+```bash
+# Run all tests in current directory
+pytest
+
+# Run tests in a specific file
+pytest test_kinematics.py
+
+# Run with verbose output (shows each test name)
+pytest -v
+
+# Run a specific test function
+pytest test_kinematics.py::test_calculate_pt_basic
+
+# Stop at first failure
+pytest -x
+```
+
+**The test lifecycle:**
+
+```
+For each test function:
+    1. Setup (prepare any needed resources)
+    2. Execute the test function
+    3. Assert results (pass/fail)
+    4. Teardown (cleanup resources)
 ```
 
 Basic test structure:
@@ -365,7 +401,95 @@ def test_mass_with_numpy_arrays():
     np.testing.assert_allclose(masses, expected, rtol=1e-10)
 ```
 
-### Test Fixtures
+### OPTIONNAL: Test Fixtures: Reusable Test Setup
+
+#### What is a Test Fixture?
+
+A **fixture** is any consistent, reusable setup that tests need to run reliably. The term comes from manufacturing, where a "fixture" holds a piece in place during work.
+
+In testing, fixtures provide:
+
+- **Test data**: Sample DataFrames, arrays, or dictionaries
+- **Resources**: Database connections, temporary files
+- **State**: A known starting point for each test
+
+**Without fixtures** (repetitive code):
+
+```python
+def test_particle_selection():
+    # Setup repeated in every test!
+    particles = pd.DataFrame({
+        'pt': [30.0, 45.0, 25.0],
+        'eta': [0.5, -1.2, 2.0]
+    })
+    selected = particles[particles['pt'] > 30]
+    assert len(selected) == 1
+
+def test_eta_cut():
+    # Same setup again!
+    particles = pd.DataFrame({
+        'pt': [30.0, 45.0, 25.0],
+        'eta': [0.5, -1.2, 2.0]
+    })
+    selected = particles[np.abs(particles['eta']) < 1.5]
+    assert len(selected) == 2
+```
+
+#### The `@pytest.fixture` Decorator
+
+The `@pytest.fixture` decorator transforms a function into a fixture provider. When a test function has a parameter with the same name as a fixture, pytest automatically:
+
+1. Calls the fixture function
+2. Passes its return value to the test
+
+```python
+import pytest
+import pandas as pd
+
+@pytest.fixture
+def particles():
+    """This function becomes a fixture."""
+    return pd.DataFrame({
+        'pt': [30.0, 45.0, 25.0],
+        'eta': [0.5, -1.2, 2.0]
+    })
+
+# pytest sees 'particles' parameter → calls the fixture → injects the DataFrame
+def test_particle_selection(particles):
+    selected = particles[particles['pt'] > 30]
+    assert len(selected) == 1
+
+def test_eta_cut(particles):
+    selected = particles[np.abs(particles['eta']) < 1.5]
+    assert len(selected) == 2
+```
+
+**Key benefits:**
+
+- **DRY (Don't Repeat Yourself)**: Setup code written once
+- **Isolation**: Each test gets a fresh copy of the data
+- **Readability**: Test functions focus on assertions, not setup
+- **Maintainability**: Change setup in one place
+
+#### Fixture Scope
+
+By default, fixtures run once per test. You can control this with the `scope` parameter:
+
+```python
+@pytest.fixture(scope="function")  # Default: run for each test
+def fresh_data():
+    return create_data()
+
+@pytest.fixture(scope="module")  # Run once per test file
+def expensive_data():
+    return load_large_dataset()  # Only loaded once!
+
+@pytest.fixture(scope="session")  # Run once for entire test session
+def database_connection():
+    return connect_to_db()
+```
+
+#### Complete Fixture Examples
 
 Fixtures provide reusable test data:
 
@@ -523,6 +647,18 @@ def dimuon_events():
 #### Using print() strategically
 
 ```python
+import numpy as np
+import pandas as pd
+
+def calculate_pair_mass(mu1, mu2):
+    """Calculate invariant mass of two muons (simplified)."""
+    # Simplified formula using pT and eta
+    E1 = mu1['pt'] * np.cosh(mu1['eta'])
+    E2 = mu2['pt'] * np.cosh(mu2['eta'])
+    p1 = mu1['pt'] * np.sinh(mu1['eta'])
+    p2 = mu2['pt'] * np.sinh(mu2['eta'])
+    return np.sqrt((E1 + E2)**2 - (p1 + p2)**2)
+
 def find_z_candidates(muons, mass_window=(70, 110)):
     """Find Z boson candidates from muon pairs."""
     print(f"DEBUG: Input muons shape: {muons.shape}")
@@ -543,11 +679,23 @@ def find_z_candidates(muons, mass_window=(70, 110)):
 
     print(f"DEBUG: Total candidates: {len(candidates)}")
     return candidates
+
+# Create sample muon data and test
+muons = pd.DataFrame({
+    'pt': [45.0, 38.0, 25.0, 50.0],
+    'eta': [0.5, -0.8, 1.2, 0.1],
+    'phi': [0.1, 2.5, -1.0, 1.5]
+})
+
+candidates = find_z_candidates(muons)
+print(f"\nFound {len(candidates)} Z candidates")
 ```
 
 #### Using assert for sanity checks
 
 ```python
+import numpy as np
+
 def apply_efficiency_correction(data, efficiency_map):
     """Apply detector efficiency correction."""
     # Sanity checks
@@ -561,6 +709,17 @@ def apply_efficiency_correction(data, efficiency_map):
     assert not np.any(np.isinf(corrected)), "Infinite values in corrected data"
 
     return corrected
+
+# Test with valid data
+data = np.array([100, 200, 150, 180])
+efficiency = np.array([0.85, 0.90, 0.78, 0.92])
+corrected = apply_efficiency_correction(data, efficiency)
+print(f"Original: {data}")
+print(f"Corrected: {corrected.round(1)}")
+
+# Test with invalid efficiency (will raise AssertionError)
+# bad_efficiency = np.array([0.85, 1.5, 0.78, 0.92])  # 1.5 > 1!
+# apply_efficiency_correction(data, bad_efficiency)
 ```
 
 ### Python Debugger (pdb)
@@ -568,12 +727,18 @@ def apply_efficiency_correction(data, efficiency_map):
 ```python
 import pdb
 
+# Create sample events for testing
+events = [
+    {'event_id': i, 'mass': 90 + np.random.normal(0, 5)}
+    for i in range(10)
+]
+
 def buggy_analysis(events):
     """Analysis with debugger breakpoint."""
     total = 0
 
     for i, event in enumerate(events):
-        # Set breakpoint
+        # Set breakpoint at event 5
         if i == 5:
             pdb.set_trace()  # Debugger stops here
 
@@ -596,6 +761,9 @@ def buggy_analysis_modern(events):
         total += mass
 
     return total / len(events)
+
+# Uncomment to test (will open interactive debugger):
+# result = buggy_analysis(events)
 ```
 
 **Common pdb commands:**
@@ -615,53 +783,174 @@ def buggy_analysis_modern(events):
 In Jupyter notebooks:
 
 ```python
-# After an error, examine the traceback interactively
-%debug
+import numpy as np
 
+# Create sample data for testing
+data = np.random.random(10000)
+```
+
+#### The `%debug` Magic Command
+
+The `%debug` command opens an interactive debugger **after an error has occurred**. This is called "post-mortem debugging" - you can inspect the state of your program at the exact moment it crashed.
+
+**How to use `%debug`:**
+
+1. Run a cell that produces an error
+2. In the next cell, type `%debug` and run it
+3. An interactive debugger (ipdb) opens at the point of failure
+4. Use pdb commands to inspect variables, navigate the call stack, etc.
+5. Type `q` to quit the debugger
+
+```python
+# Step 1: Run code that will fail
+def compute_ratio(a, b):
+    """Compute ratio - will fail if b contains zeros."""
+    return a / b
+
+def analyze_samples(samples):
+    """Analyze samples by computing ratios."""
+    ratios = []
+    for i, sample in enumerate(samples):
+        ratio = compute_ratio(sample['value'], sample['weight'])
+        ratios.append(ratio)
+    return np.array(ratios)
+
+# This will raise ZeroDivisionError!
+samples = [
+    {'value': 10, 'weight': 2},
+    {'value': 15, 'weight': 3},
+    {'value': 20, 'weight': 0},  # Bug: weight is 0!
+    {'value': 25, 'weight': 5},
+]
+
+# Uncomment to see the error:
+# analyze_samples(samples)
+```
+
+```python
+# Step 2: After the error, run %debug in a new cell
+%debug
+```
+
+**Inside the debugger, you can:**
+
+```
+ipdb> p sample          # Print the current sample
+{'value': 20, 'weight': 0}
+
+ipdb> p i               # Print the loop index
+2
+
+ipdb> p samples         # Print all samples
+[{'value': 10, 'weight': 2}, ...]
+
+ipdb> u                 # Go UP one level in the call stack
+ipdb> d                 # Go DOWN one level in the call stack
+
+ipdb> l                 # List code around current line
+
+ipdb> q                 # Quit the debugger
+```
+
+#### Automatic Debugging with `%pdb`
+
+You can enable automatic post-mortem debugging so you don't need to type `%debug` manually:
+
+```python
+# Enable automatic debugger on exceptions
+%pdb on
+
+# Now any error will automatically open the debugger
+# analyze_samples(samples)  # Would open debugger automatically
+
+# Disable automatic debugger
+%pdb off
+```
+
+#### Debugging Commands Summary
+
+| Command | Action |
+|---------|--------|
+| `p var` | Print variable value |
+| `pp var` | Pretty-print variable |
+| `l` | List source code around current line |
+| `u` | Go UP one level in call stack |
+| `d` | Go DOWN one level in call stack |
+| `w` | Print full stack trace (where) |
+| `q` | Quit debugger |
+| `h` | Help |
+
+```python
 # Time a single line
 %timeit np.sum(data**2)
+```
 
-# Time a cell
+```python
 %%timeit
+# Time a cell
 result = 0
 for x in data:
     result += x**2
-
-# Profile a function
-%prun analyze_events(data)
-
-# Line-by-line profiling (requires line_profiler)
-%lprun -f my_function my_function(data)
 ```
 
-### Profiling for Performance Bottlenecks
+```python
+# Profile a function
+def analyze_data(arr):
+    return np.sqrt(np.sum(arr**2))
+
+%prun analyze_data(data)
+```
+
+### OPTIONNAL : Profiling for Performance Bottlenecks
 
 ```python
 import cProfile
 import pstats
+import numpy as np
+from contextlib import contextmanager
+import time
 
+# Define functions to profile
+def slow_sum(data):
+    """Intentionally slow sum using Python loop."""
+    total = 0
+    for x in data:
+        total += x
+    return total
+
+def fast_sum(data):
+    """Fast sum using NumPy."""
+    return np.sum(data)
+
+def run_full_analysis(data):
+    """Run analysis pipeline."""
+    result1 = slow_sum(data)
+    result2 = fast_sum(data)
+    return result1, result2
+
+# Create test data
+data = np.random.random(100000)
+
+# Profile the analysis
 def profile_analysis():
     """Profile the analysis to find bottlenecks."""
-
-    # Create profiler
     profiler = cProfile.Profile()
 
-    # Run the analysis
     profiler.enable()
     result = run_full_analysis(data)
     profiler.disable()
 
-    # Print statistics
     stats = pstats.Stats(profiler)
     stats.sort_stats('cumulative')
-    stats.print_stats(20)  # Top 20 functions
+    stats.print_stats(10)  # Top 10 functions
 
     return result
 
-# Or use as context manager
-from contextlib import contextmanager
-import time
+profile_analysis()
+```
 
+```python
+# Timer context manager - very useful!
 @contextmanager
 def timer(description):
     """Context manager for timing code blocks."""
@@ -670,18 +959,24 @@ def timer(description):
     elapsed = time.time() - start
     print(f"{description}: {elapsed:.3f} seconds")
 
-# Usage
-with timer("Event selection"):
-    selected = apply_cuts(data)
+# Usage example
+data = np.random.random(1000000)
 
-with timer("Mass calculation"):
-    masses = calculate_masses(selected)
+with timer("Python loop sum"):
+    total = 0
+    for x in data:
+        total += x
+
+with timer("NumPy sum"):
+    total = np.sum(data)
 ```
 
 ### Memory Profiling
 
 ```python
 import sys
+import numpy as np
+import pandas as pd
 
 def check_memory_usage(obj, name="object"):
     """Check memory usage of an object."""
@@ -702,33 +997,56 @@ def check_memory_usage(obj, name="object"):
             return
         size_bytes /= 1024
 
-# Usage
-import numpy as np
-import pandas as pd
-
+# Test with different data structures
 data = np.random.random((10000, 100))
-check_memory_usage(data, "numpy array")
+check_memory_usage(data, "numpy array (10000x100)")
 
 df = pd.DataFrame(data)
-check_memory_usage(df, "pandas DataFrame")
+check_memory_usage(df, "pandas DataFrame (10000x100)")
+
+# Compare dtypes impact on memory
+small_ints = np.array([1, 2, 3, 4, 5], dtype=np.int8)
+large_ints = np.array([1, 2, 3, 4, 5], dtype=np.int64)
+check_memory_usage(small_ints, "int8 array")
+check_memory_usage(large_ints, "int64 array")
 ```
 
 ### Logging for Production Code
 
 ```python
 import logging
+import numpy as np
+import pandas as pd
 
-# Configure logging
+# Configure logging (in Jupyter, use StreamHandler only)
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,  # Set to DEBUG to see all messages
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('analysis.log'),
-        logging.StreamHandler()  # Also print to console
+        logging.StreamHandler()  # Print to console/notebook
     ]
 )
 
 logger = logging.getLogger('particle_analysis')
+
+# Define the helper functions
+def load_data(data_path):
+    """Simulate loading data."""
+    # In real code: return pd.read_csv(data_path)
+    np.random.seed(42)
+    return pd.DataFrame({
+        'pt': np.random.exponential(30, 1000),
+        'eta': np.random.uniform(-2.5, 2.5, 1000),
+        'mass': np.random.normal(91, 5, 1000)
+    })
+
+def apply_cuts(data):
+    """Apply selection cuts."""
+    return data[(data['pt'] > 20) & (np.abs(data['eta']) < 2.0)]
+
+def calculate_masses(data):
+    """Return mass column."""
+    return data['mass']
 
 def analyze_run(run_id, data_path):
     """Analyze a single run with logging."""
@@ -759,20 +1077,39 @@ def analyze_run(run_id, data_path):
         logger.exception(f"Unexpected error in run {run_id}")
         raise
 
+# Test the logging
+masses = analyze_run(run_id=12345, data_path="events.csv")
+
 # Logging levels: DEBUG < INFO < WARNING < ERROR < CRITICAL
 ```
 
 ### Common Debugging Patterns
 
 ```python
-# Pattern 1: Isolate the problem
+import numpy as np
+import pandas as pd
+
+# Create sample data for all patterns
+np.random.seed(42)
+sample_data = pd.DataFrame({
+    'pt': np.random.exponential(30, 100),
+    'eta': np.random.uniform(-2.5, 2.5, 100),
+    'phi': np.random.uniform(-np.pi, np.pi, 100)
+})
+
+# Pattern 1: Isolate the problem - break into steps
+def calculate_mass(data):
+    """Simple mass calculation."""
+    return data['pt'] * 0.5  # Simplified
+
 def debug_step_by_step(data):
     """Break complex operation into steps for debugging."""
-    # Step 1: Load
+    # Step 1: Check input
     print(f"Step 1: Loaded {len(data)} events")
+    print(f"        Columns: {list(data.columns)}")
 
     # Step 2: Filter
-    filtered = data[data['pt'] > 20]
+    filtered = data[data['pt'] > 20].copy()
     print(f"Step 2: After pT cut: {len(filtered)} events")
 
     # Step 3: Calculate
@@ -781,29 +1118,69 @@ def debug_step_by_step(data):
 
     return filtered
 
+result = debug_step_by_step(sample_data)
+```
+
+```python
 # Pattern 2: Compare with known result
+def calculate_pt(px, py):
+    """Calculate transverse momentum."""
+    return np.sqrt(px**2 + py**2)
+
 def verify_calculation():
-    """Verify calculation against known physics."""
-    # Z boson mass should be ~91.2 GeV
-    z_mass = calculate_dimuon_mass(muon1, muon2)
-    print(f"Calculated Z mass: {z_mass:.2f} GeV (expected ~91.2)")
+    """Verify calculation against known values."""
+    # Known: 3-4-5 triangle
+    pt = calculate_pt(3, 4)
+    print(f"Calculated pT: {pt:.2f} (expected 5.0)")
+    assert pt == 5.0, f"pT calculation wrong: {pt}"
 
-    # Check if reasonable
-    assert 80 < z_mass < 100, f"Z mass outside expected range: {z_mass}"
+    # Known: 5-12-13 triangle
+    pt = calculate_pt(5, 12)
+    print(f"Calculated pT: {pt:.2f} (expected 13.0)")
+    assert pt == 13.0, f"pT calculation wrong: {pt}"
 
+    print("All verifications passed!")
+
+verify_calculation()
+```
+
+```python
 # Pattern 3: Binary search for bugs
+def process_events(events):
+    """Process events - fails on event with negative pt."""
+    for i, row in events.iterrows():
+        if row['pt'] < 0:
+            raise ValueError(f"Negative pT at index {i}")
+    return len(events)
+
+# Create data with one bad event
+bad_data = sample_data.copy()
+bad_data.loc[73, 'pt'] = -5  # Introduce bug at index 73
+
 def find_bad_event(events):
     """Use binary search to find problematic event."""
     n = len(events)
+    print(f"Searching {n} events...")
 
-    # Check first half
+    if n <= 1:
+        print(f"Found bad event at index: {events.index[0]}")
+        return events.index[0]
+
+    mid = n // 2
+    first_half = events.iloc[:mid]
+    second_half = events.iloc[mid:]
+
     try:
-        process_events(events[:n//2])
-        print("Bug is in second half")
-        # Continue with second half...
-    except:
-        print("Bug is in first half")
-        # Continue with first half...
+        process_events(first_half)
+        print(f"Bug is in second half (indices {mid}-{n-1})")
+        return find_bad_event(second_half)
+    except ValueError:
+        print(f"Bug is in first half (indices 0-{mid-1})")
+        return find_bad_event(first_half)
+
+# Find the bad event
+bad_index = find_bad_event(bad_data)
+print(f"\nBad event details:\n{bad_data.loc[bad_index]}")
 ```
 
 ### Exercise 3.3 (30 min)
