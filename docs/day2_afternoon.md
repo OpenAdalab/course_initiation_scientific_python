@@ -341,6 +341,84 @@ print(electron.mass)  # 0.000511
 muon.info()  # muon: m=0.105 GeV/c², q=-1e
 ```
 
+### Exemple of workflow : combining functions and classes
+
+A common pattern is to use **functions** for data processing steps and **classes** to organize your analysis:
+
+```python
+import numpy as np
+import pandas as pd
+
+# Functions for processing steps
+def load_events(filename):
+    """Load event data from file."""
+    return pd.read_csv(filename)
+
+def select_muons(df, pt_min=20.0, eta_max=2.4):
+    """Select muon candidates passing kinematic cuts."""
+    mask = (df['pt'] > pt_min) & (np.abs(df['eta']) < eta_max)
+    return df[mask]
+
+def calculate_invariant_mass(mu1, mu2):
+    """Calculate invariant mass of two muons."""
+    E_total = mu1['E'] + mu2['E']
+    px_total = mu1['px'] + mu2['px']
+    py_total = mu1['py'] + mu2['py']
+    pz_total = mu1['pz'] + mu2['pz']
+    m2 = E_total**2 - (px_total**2 + py_total**2 + pz_total**2)
+    return np.sqrt(m2) if m2 > 0 else 0
+
+# Class to organize the analysis
+class ZBosonAnalysis:
+    """Simple Z boson analysis."""
+
+    def __init__(self, name):
+        self.name = name
+        self.data = None
+        self.selected = None
+        self.masses = []
+
+    def load(self, filename):
+        """Load data using our function."""
+        self.data = load_events(filename)
+        print(f"Loaded {len(self.data)} events")
+
+    def select(self, pt_min=20.0, eta_max=2.4):
+        """Apply selection using our function."""
+        self.selected = select_muons(self.data, pt_min, eta_max)
+        print(f"Selected {len(self.selected)} muons")
+
+    def find_z_candidates(self):
+        """Find Z candidates from muon pairs."""
+        # Simplified: pair consecutive muons
+        for i in range(0, len(self.selected) - 1, 2):
+            mu1 = self.selected.iloc[i]
+            mu2 = self.selected.iloc[i + 1]
+            mass = calculate_invariant_mass(mu1, mu2)
+            if 70 < mass < 110:  # Z mass window
+                self.masses.append(mass)
+        print(f"Found {len(self.masses)} Z candidates")
+
+    def summary(self):
+        """Print analysis summary."""
+        print(f"\n=== {self.name} ===")
+        print(f"Z candidates: {len(self.masses)}")
+        if self.masses:
+            print(f"Mean mass: {np.mean(self.masses):.1f} GeV")
+
+# Usage
+analysis = ZBosonAnalysis("My Z Analysis")
+analysis.load("muons.csv")
+analysis.select(pt_min=25.0)
+analysis.find_z_candidates()
+analysis.summary()
+```
+
+This pattern keeps functions simple and testable, while the class provides a clear workflow structure. 
+You can write some kind of code in a python file (```.py```), in order to be automated & debuged more easily !
+
+
+
 ### (Optionnal) Advanced exemples : The Particle Class with 4-Momentum
 
 ```python
@@ -642,68 +720,66 @@ class Jet:
     print((v1 + v2).mass)  # Combined mass
     ```
 
-### Analysis Workflow with Classes
+??? info "Analysis Workflow with Classes (Advanced)"
+    For more complex analyses, you can create a generic `AnalysisChain` class that manages steps dynamically:
 
-```python
-class AnalysisChain:
-    """Configurable analysis workflow."""
+    ```python
+    class AnalysisChain:
+        """Configurable analysis workflow."""
 
-    def __init__(self, name, config=None):
-        self.name = name
-        self.config = config or {}
-        self.steps = []
-        self.results = {}
+        def __init__(self, name, config=None):
+            self.name = name
+            self.config = config or {}
+            self.steps = []
+            self.results = {}
 
-    def add_step(self, name, function):
-        """Add an analysis step."""
-        self.steps.append({'name': name, 'function': function})
+        def add_step(self, name, function):
+            """Add an analysis step."""
+            self.steps.append({'name': name, 'function': function})
 
-    def run(self, data):
-        """Execute all analysis steps."""
-        result = data
-        for step in self.steps:
-            print(f"Running: {step['name']}")
-            result = step['function'](result)
-            self.results[step['name']] = result
-        return result
+        def run(self, data):
+            """Execute all analysis steps."""
+            result = data
+            for step in self.steps:
+                print(f"Running: {step['name']}")
+                result = step['function'](result)
+                self.results[step['name']] = result
+            return result
 
-    def summary(self):
-        """Print analysis summary."""
-        print(f"\n=== Analysis: {self.name} ===")
-        for step_name, result in self.results.items():
-            if hasattr(result, '__len__'):
-                print(f"  {step_name}: {len(result)} entries")
-            else:
-                print(f"  {step_name}: {result}")
+        def summary(self):
+            """Print analysis summary."""
+            print(f"\n=== Analysis: {self.name} ===")
+            for step_name, result in self.results.items():
+                if hasattr(result, '__len__'):
+                    print(f"  {step_name}: {len(result)} entries")
+                else:
+                    print(f"  {step_name}: {result}")
 
-# Usage example
-def load_data(path):
-    """Load data from file."""
-    import pandas as pd
-    # Simulated data for example
-    return pd.DataFrame({
-        'pt': np.random.exponential(30, 1000),
-        'eta': np.random.uniform(-2.5, 2.5, 1000),
-        'trigger': np.random.choice([True, False], 1000, p=[0.7, 0.3])
-    })
+    # Usage example
+    def load_data(path):
+        """Load data from file."""
+        import pandas as pd
+        return pd.DataFrame({
+            'pt': np.random.exponential(30, 1000),
+            'eta': np.random.uniform(-2.5, 2.5, 1000),
+            'trigger': np.random.choice([True, False], 1000, p=[0.7, 0.3])
+        })
 
-def apply_trigger(df):
-    """Apply trigger selection."""
-    return df[df['trigger']]
+    def apply_trigger(df):
+        return df[df['trigger']]
 
-def apply_kinematic_cuts(df):
-    """Apply kinematic cuts."""
-    return df[(df['pt'] > 20) & (np.abs(df['eta']) < 2.4)]
+    def apply_kinematic_cuts(df):
+        return df[(df['pt'] > 20) & (np.abs(df['eta']) < 2.4)]
 
-# Build and run analysis
-analysis = AnalysisChain('Z Analysis')
-analysis.add_step('Load', lambda x: load_data(x))
-analysis.add_step('Trigger', apply_trigger)
-analysis.add_step('Kinematics', apply_kinematic_cuts)
+    # Build and run analysis
+    analysis = AnalysisChain('Z Analysis')
+    analysis.add_step('Load', lambda x: load_data(x))
+    analysis.add_step('Trigger', apply_trigger)
+    analysis.add_step('Kinematics', apply_kinematic_cuts)
 
-final_data = analysis.run('data.csv')
-analysis.summary()
-```
+    final_data = analysis.run('data.csv')
+    analysis.summary()
+    ```
 
 ### Exercise 2.5 (60 min)
 
