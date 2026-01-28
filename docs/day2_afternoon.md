@@ -417,8 +417,6 @@ analysis.summary()
 This pattern keeps functions simple and testable, while the class provides a clear workflow structure. 
 You can write some kind of code in a python file (```.py```), in order to be automated & debuged more easily !
 
-
-
 ### (Optionnal) Advanced exemples : The Particle Class with 4-Momentum
 
 ```python
@@ -580,7 +578,45 @@ selected = event.select_particles(pt_min=30)
 print(f"Particles with pt > 30: {len(selected)}")
 ```
 
-### Inheritance: Specialized Particles
+### Inheritance: exemple with specialized particles classes
+
+**Inheritance** allows you to create new classes based on existing ones. The new class (called **child** or **subclass**) automatically gets all attributes and methods from the existing class (called **parent** or **superclass**), and can:
+
+- **Add** new attributes and methods
+- **Override** existing methods with specialized behavior
+- **Extend** parent methods by calling them with `super()` 
+
+```
+Parent Class (Particle)
+    ├── attributes: px, py, pz, E, name
+    ├── methods: pt, mass, eta, phi
+    │
+    └── Child Class (Lepton) inherits all above, plus:
+            ├── new attribute: charge
+            ├── new method: is_isolated()
+            │
+            ├── Grandchild (Electron): cluster_energy, energy_momentum_match()
+            └── Grandchild (Muon): track_quality, is_combined()
+```
+
+**Why use inheritance?**
+
+- **Avoid code duplication**: Common code stays in the parent class
+- **Logical organization**: Group related classes in a hierarchy
+- **Polymorphism**: Treat different objects uniformly (e.g., loop over all particles)
+
+**Key syntax:**
+
+```python
+class ChildClass(ParentClass):
+    def __init__(self, parent_args, new_args):
+        # Call parent's __init__ to initialize inherited attributes
+        super().__init__(parent_args)
+        # Add new attributes specific to the child
+        self.new_attribute = new_args
+```
+
+**Example hierarchy:**
 
 ```python
 class Lepton(Particle):
@@ -645,6 +681,27 @@ class Jet:
     def is_b_tagged(self, working_point=0.7):
         """Check if jet is b-tagged."""
         return self.btag_score > working_point
+```
+??? "Different typologies of inheritance"
+    For a review ot different types of inheritance, you can see [this blog page](https://www.codecademy.com/article/what-is-python-inheritance) or [this one in french](https://www.datacamp.com/fr/tutorial/python-inheritance)
+
+
+**Using inherited classes:**
+
+```python
+# Create specific particle types
+electron = Electron(px=30, py=20, pz=10, E=50, charge=-1)
+muon = Muon(px=-25, py=-15, pz=40, E=45, charge=-1)
+
+# Inherited properties work automatically
+print(f"Electron pt: {electron.pt:.2f}")  # From Particle
+print(f"Electron charge: {electron.charge}")  # From Lepton
+print(f"E/p match: {electron.energy_momentum_match()}")  # Electron-specific
+
+# Polymorphism: treat different types uniformly
+particles = [electron, muon]
+for p in particles:
+    print(f"{p.name}: pt={p.pt:.2f}, isolated={p.is_isolated()}")
 ```
 
 ??? info "Special methods (Advanced)"
